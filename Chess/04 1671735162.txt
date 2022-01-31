@@ -1,0 +1,282 @@
+PandionJ Error Report
+
+java.lang.NullPointerException : null
+
+Exception trace: 
+
+org.eclipse.draw2d.Figure.add(Figure.java:149)
+org.eclipse.draw2d.Figure.add(Figure.java:175)
+pt.iscte.pandionj.figures.ObjectContainer.addObject(ObjectContainer.java:69)
+pt.iscte.pandionj.figures.ObjectContainer.addObject(ObjectContainer.java:50)
+pt.iscte.pandionj.RuntimeViewer.lambda$2(RuntimeViewer.java:262)
+pt.iscte.pandionj.PandionJView.executeInternal(PandionJView.java:327)
+pt.iscte.pandionj.extensibility.PandionJUI.lambda$1(PandionJUI.java:136)
+org.eclipse.swt.widgets.RunnableLock.run(RunnableLock.java:40)
+org.eclipse.swt.widgets.Synchronizer.runAsyncMessages(Synchronizer.java:185)
+org.eclipse.swt.widgets.Display.runAsyncMessages(Display.java:3933)
+org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3564)
+org.eclipse.jface.window.Window.runEventLoop(Window.java:821)
+org.eclipse.jface.window.Window.open(Window.java:797)
+org.eclipse.jface.dialogs.MessageDialogWithToggle.open(MessageDialogWithToggle.java:179)
+org.eclipse.debug.internal.ui.launchConfigurations.PerspectiveManager.shouldSwitchPerspective(PerspectiveManager.java:675)
+org.eclipse.debug.internal.ui.launchConfigurations.PerspectiveManager.access$2(PerspectiveManager.java:614)
+org.eclipse.debug.internal.ui.launchConfigurations.PerspectiveManager$2.runInUIThread(PerspectiveManager.java:464)
+org.eclipse.debug.internal.ui.launchConfigurations.PerspectiveManager$MyUIJob.lambda$0(PerspectiveManager.java:232)
+org.eclipse.swt.widgets.RunnableLock.run(RunnableLock.java:40)
+org.eclipse.swt.widgets.Synchronizer.runAsyncMessages(Synchronizer.java:185)
+org.eclipse.swt.widgets.Display.runAsyncMessages(Display.java:3933)
+org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3564)
+org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$5.run(PartRenderingEngine.java:1173)
+org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:339)
+org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1062)
+org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:156)
+org.eclipse.ui.internal.Workbench.lambda$3(Workbench.java:628)
+org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:339)
+org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:563)
+org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:151)
+org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:155)
+org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:199)
+org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:137)
+org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:107)
+org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:391)
+org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:246)
+sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+java.lang.reflect.Method.invoke(Unknown Source)
+org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:659)
+org.eclipse.equinox.launcher.Main.basicRun(Main.java:595)
+org.eclipse.equinox.launcher.Main.run(Main.java:1501)
+Error code: 1671735162
+
+User code: 
+
+package mainPackage;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.JPanel;
+import javax.swing.Timer;
+
+import Objects.Bishop;
+import Objects.King;
+import Objects.Knight;
+import Objects.Pawn2;
+import Objects.Piece;
+import Objects.Queen;
+import Objects.Tower;
+
+public class Gameplay extends JPanel implements MouseListener, KeyListener, ActionListener {
+
+	private static final long serialVersionUID = 1L;
+	private Point p = new Point(400, 400);
+	private Timer timer;
+	private int delay = 1;
+	private int numOfPieces;
+	private Piece[][] board = new Piece[8][8];
+	private Piece selectedPiece;
+	
+	private int futureScore;
+
+	public Gameplay() {
+		addMouseListener(this);
+		addKeyListener(this);
+		setFocusTraversalKeysEnabled(false);
+		inicGame();
+		timer = new Timer(delay, this);
+		timer.start();
+	}
+	
+	@Override
+	public void keyPressed(KeyEvent arg0) {
+		
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		p = arg0.getPoint();
+	}
+	
+	public void paint(Graphics g) {
+		g.setColor(Color.WHITE);
+		g.fillRect(0, 0, 800, 800);
+		
+		g.setColor(Color.BLACK);
+		for(int i = 0; i < 8; i++) {
+			for(int j = 0; j < 8; j++) {
+				if(board[i][j] != null) {
+					if(board[i][j].isSelected()) {
+						g.setColor(Color.GREEN);
+						g.fillRect(i*100, j*100, 100, 100);
+						g.setColor(Color.BLACK);
+					} else {
+						if(selectedPiece != null) {
+							if(selectedPiece.canMoveThere(i+1, j+1, this)) {
+								g.setColor(Color.CYAN);
+								g.fillRect(i*100, j*100, 100, 100);
+								g.setColor(Color.BLACK);
+							} else {
+								if(Math.pow(-1,(i)+(j))==1) 
+									g.fillRect(i*100, j*100, 100, 100);
+							}
+						} else {
+							if(Math.pow(-1,(i)+(j))==1) 
+								g.fillRect(i*100, j*100, 100, 100);
+						}
+					}
+				} else {
+					if(selectedPiece != null) {
+						if(selectedPiece.canMoveThere(i+1, j+1, this)) {
+							g.setColor(Color.CYAN);
+							g.fillRect(i*100, j*100, 100, 100);
+							g.setColor(Color.BLACK);
+						} else {
+							if(Math.pow(-1,(i)+(j))==1) 
+								g.fillRect(i*100, j*100, 100, 100);
+						}
+					} else {
+						if(Math.pow(-1,(i)+(j))==1) 
+							g.fillRect(i*100, j*100, 100, 100);
+					}
+				}
+			}
+		}
+		
+		for(int i = 0; i < 8; i++) {
+			for(int j = 0; j < 8; j++) {
+				if(board[i][j] != null) {
+					g.drawImage(board[i][j].getImg(), 10 + 100*(i), 10 + 100*(j), null);
+				}
+			}
+		}
+		
+		
+		g.setColor(new Color(100, 100, 100));
+		if(p != null)	
+			g.drawOval(p.x, p.y, 5, 5);
+		
+		g.dispose();
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		if(p != null) {
+			int x = p.x/100;
+			int y = p.y/100;
+		}
+		if(p != null) {
+>>>>			if(board[x][y] != null) {
+				if(selectedPiece != null) {
+					if(selectedPiece.canMoveThere(x + 1, y + 1, this)) {
+						futureScore += board[x-1][y-1].getValue();
+						board[x][y] = selectedPiece;
+						board[selectedPiece.getX() - 1][selectedPiece.getY() - 1] = null;
+						selectedPiece.setPos(x + 1, y + 1);
+						selectedPiece.unselect();
+						selectedPiece = null;
+						p = null;
+					} else {
+						selectedPiece.unselect();
+						selectedPiece = board[x][y];
+						selectedPiece.select();
+					}
+				} else {
+					selectedPiece = board[x][y];
+					selectedPiece.select();
+				}			
+			} else {
+				if(selectedPiece != null) {
+					if(selectedPiece.canMoveThere(x + 1, y + 1, this)) {
+						board[x][y] = selectedPiece;
+						board[selectedPiece.getX() - 1][selectedPiece.getY() - 1] = null;
+						selectedPiece.setPos(x + 1, y + 1);
+						selectedPiece.unselect();
+						selectedPiece = null;
+						p = null;
+					} else {
+						selectedPiece.unselect();
+						selectedPiece = null;
+					}
+				}
+			}
+		}
+		repaint();
+	}
+	
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+	}
+	@Override
+	public void keyTyped(KeyEvent arg0) {	
+	}
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+	}
+	@Override
+	public void mouseExited(MouseEvent arg0) {	
+	}
+	@Override
+	public void mousePressed(MouseEvent arg0) {	
+	}
+	@Override
+	public void mouseReleased(MouseEvent arg0) {	
+	}
+
+	public Piece[][] getBoard() {
+		return board;
+	}
+	
+	public int getNumOfPieces() {
+		return numOfPieces;
+	}
+	
+	public void inicGame() {
+		fillAllPieces();
+		numOfPieces = 32;
+	}
+	
+	public void fillAllPieces() {		
+		for(int i = 0; i < 8; i++) {
+			board[i][6] = new Pawn2(true, i+1, 7);
+			board[i][1] = new Pawn2(false, i+1, 2);
+		}
+		boolean b = false;
+		for(int i = 0; i < 2; i++) {
+
+			board[0][7*i] = new Tower(b, 1, 8*i + 1 - i);
+			board[1][7*i] = new Knight(b, 2, 8*i + 1 - i);
+			board[2][7*i] = new Bishop(b, 3, 8*i + 1 - i);
+			board[3][7*i] = new King(b, 4, 8*i + 1 - i);
+			board[4][7*i] = new Queen(b, 5, 8*i + 1 - i);
+			board[5][7*i] = new Bishop(b, 6, 8*i + 1 - i);
+			board[6][7*i] = new Knight(b, 7, 8*i + 1 - i);
+			board[7][7*i] = new Tower(b, 8, 8*i + 1 - i);
+			b = !b;
+		}
+		
+		board[1][3] = new King(false, 2, 4);
+		board[5][2] = new Knight(true, 6, 3);
+		
+	}
+	
+	public void move(int x, int y) {
+		
+	}
+	
+	
+	
+}
+
+
+Call stack:
+
+pt.iscte.pandionj.model.StackFrameModel@5bd9b5a1
+
